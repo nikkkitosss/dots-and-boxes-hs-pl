@@ -1,0 +1,19 @@
+cabal-version:      3.0
+name:               dots-and-boxes
+version:            0.1.0.0
+
+executable dots-and-boxes
+    main-is:          Server.hs
+    default-language: Haskell2010
+    ghc-options:      -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
+
+    build-depends:
+        base           >= 4.14 && < 5,
+        scotty         >= 0.12 && < 0.23,
+        aeson          >= 2.0  && < 2.3,
+        wai            >= 3.2  && < 3.3,
+        wai-extra      >= 3.1  && < 3.2,
+        http-types     >= 0.12 && < 0.13,
+        containers     >= 0.6  && < 0.8,
+        text           >= 1.2  && < 2.2,
+        transformers   >= 0.5  && < 0.7

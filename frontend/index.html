@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dots & Boxes</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d0d0d;
+  --surface: #141414;
+  --border: #252525;
+  --p1: #ff4d4d;
+  --p2: #4d9fff;
+  --p1dim: rgba(255,77,77,.15);
+  --p2dim: rgba(77,159,255,.15);
+  --text: #f0f0f0;
+  --muted: #555;
+  --green: #4dff91;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: -.02em;
+}
+.logo .dot { color: var(--p1); }
+.logo .box { color: var(--p2); }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+}
+
+/* Backend switcher pill */
+.be-switcher {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.be-btn {
+  padding: .35rem .9rem;
+  font-family: 'Space Mono', monospace;
+  font-size: .7rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: .15s;
+  white-space: nowrap;
+}
+.be-btn:hover { color: var(--text); }
+.be-btn.hs.active { background: var(--p1dim); color: var(--p1); }
+.be-btn.pl.active { background: var(--p2dim); color: var(--p2); }
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .68rem;
+  color: var(--muted);
+  padding: .35rem .8rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: .3s;
+}
+.status-dot.online  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.status-dot.offline { background: var(--p1); }
+.status-dot.checking { background: #f59e0b; animation: pulse .8s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ── MAIN ── */
+main {
+  display: grid;
+  grid-template-columns: 280px 1fr 280px;
+  gap: 0;
+  height: calc(100vh - 57px);
+}
+
+/* ── PANELS ── */
+.panel {
+  border-right: 1px solid var(--border);
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  overflow-y: auto;
+}
+.panel:last-child {
+  border-right: none;
+  border-left: 1px solid var(--border);
+}
+
+.panel-section { display: flex; flex-direction: column; gap: .6rem; }
+.panel-label {
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .15em;
+  color: var(--muted);
+  margin-bottom: .2rem;
+}
+
+/* Setup inputs */
+.field { display: flex; flex-direction: column; gap: .3rem; }
+.field label { font-size: .65rem; color: var(--muted); letter-spacing: .08em; }
+.field input, .field select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: .8rem;
+  padding: .45rem .7rem;
+  outline: none;
+  transition: .15s;
+  width: 100%;
+}
+.field input:focus, .field select:focus { border-color: #444; }
+
+.btn-new {
+  width: 100%;
+  padding: .6rem;
+  background: var(--text);
+  color: var(--bg);
+  font-family: 'Unbounded', sans-serif;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: .15s;
+  margin-top: .2rem;
+}
+.btn-new:hover { opacity: .85; }
+.btn-new:disabled { opacity: .3; cursor: default; }
+
+/* Player cards */
+.player-card {
+  padding: .7rem .9rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: .2s;
+}
+.player-card.active-p1 {
+  border-color: var(--p1);
+  background: var(--p1dim);
+}
+.player-card.active-p2 {
+  border-color: var(--p2);
+  background: var(--p2dim);
+}
+.player-name { font-size: .85rem; font-weight: 700; }
+.player-name.p1 { color: var(--p1); }
+.player-name.p2 { color: var(--p2); }
+.player-score {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+}
+.turn-indicator {
+  font-size: .7rem;
+  color: var(--muted);
+  text-align: center;
+  min-height: 1.2em;
+}
+
+/* Move log */
+.log-list {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: .2rem;
+}
+.log-list::-webkit-scrollbar { width: 2px; }
+.log-list::-webkit-scrollbar-thumb { background: var(--border); }
+
+.log-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .68rem;
+  color: var(--muted);
+  padding: .25rem 0;
+  border-bottom: 1px solid #1a1a1a;
+}
+.log-n { opacity: .4; min-width: 20px; }
+.log-item.p1 .log-move { color: var(--p1); }
+.log-item.p2 .log-move { color: var(--p2); }
+.log-cap { opacity: .5; margin-left: auto; }
+
+/* Error */
+.err-box {
+  padding: .5rem .7rem;
+  background: rgba(255,77,77,.08);
+  border: 1px solid rgba(255,77,77,.2);
+  border-radius: 5px;
+  font-size: .72rem;
+  color: #ff8080;
+  display: none;
+}
+
+/* Info section */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: .7rem;
+  color: var(--muted);
+  padding: .15rem 0;
+}
+.info-row span { color: var(--text); }
+
+/* ── CENTER: BOARD ── */
+.board-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  pointer-events: none;
+}
+
+.board-wrap {
+  position: relative;
+  pointer-events: none;
+}
+
+#board-svg {
+  display: block;
+  overflow: visible;
+  pointer-events: all;
+}
+
+/* Win overlay */
+.win-overlay {
+  position: absolute;
+  inset: -20px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: rgba(13,13,13,.92);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  animation: fadeIn .3s ease;
+  z-index: 10;
+}
+@keyframes fadeIn { from { opacity:0; transform:scale(.97) } to { opacity:1; transform:scale(1) } }
+.win-text {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  text-align: center;
+  line-height: 1.2;
+}
+.win-scores {
+  font-size: .75rem;
+  color: var(--muted);
+}
+.btn-again {
+  pointer-events: all;
+  padding: .6rem 2rem;
+  background: var(--text);
+  color: var(--bg);
+  font-family: 'Unbounded', sans-serif;
+  font-size: .72rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: .3rem;
+  transition: .15s;
+}
+.btn-again:hover { opacity: .85; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    height: auto;
+  }
+  .panel { border-right: none; border-bottom: 1px solid var(--border); }
+  .panel:last-child { border-left: none; border-top: 1px solid var(--border); }
+  .board-center { padding: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="dot">●</span>&nbsp;dots&nbsp;&amp;&nbsp;<span class="box">■</span>&nbsp;boxes
+  </div>
+  <div class="header-right">
+    <div class="be-switcher">
+      <button class="be-btn hs" id="btn-hs" onclick="switchBackend('haskell')">🟠 Haskell</button>
+      <button class="be-btn pl" id="btn-pl" onclick="switchBackend('prolog')">🔵 Prolog</button>
+    </div>
+    <div class="status-pill">
+      <div class="status-dot checking" id="sdot"></div>
+      <span id="stxt">…</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- LEFT PANEL -->
+  <aside class="panel">
+    <div class="panel-section">
+      <div class="panel-label">Налаштування</div>
+      <div class="field">
+        <label>Гравець 1</label>
+        <input id="name1" value="Аліса">
+      </div>
+      <div class="field">
+        <label>Гравець 2</label>
+        <input id="name2" value="Боб">
+      </div>
+      <div class="field">
+        <label>Розмір поля</label>
+        <select id="size">
+          <option value="2">2 × 2</option>
+          <option value="3" selected>3 × 3</option>
+          <option value="4">4 × 4</option>
+          <option value="5">5 × 5</option>
+        </select>
+      </div>
+      <button class="btn-new" onclick="newGame()">НОВА ГРА</button>
+      <div class="err-box" id="err-box"></div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-label">Рахунок</div>
+      <div class="player-card" id="card-p1">
+        <span class="player-name p1" id="lbl-p1">Аліса</span>
+        <span class="player-score" id="sc-p1" style="color:var(--p1)">0</span>
+      </div>
+      <div class="player-card" id="card-p2">
+        <span class="player-name p2" id="lbl-p2">Боб</span>
+        <span class="player-score" id="sc-p2" style="color:var(--p2)">0</span>
+      </div>
+      <div class="turn-indicator" id="turn">— почніть гру —</div>
+    </div>
+  </aside>
+
+  <!-- CENTER: BOARD -->
+  <div class="board-center" id="board-center">
+    <div style="position:relative;display:inline-block;">
+      <svg id="board-svg" style="display:block;overflow:visible;cursor:crosshair;"></svg>
+      <div class="win-overlay" id="win-overlay" style="display:none;pointer-events:none;">
+        <div class="win-text" id="win-text">—</div>
+        <div class="win-scores" id="win-scores"></div>
+        <button class="btn-again" style="pointer-events:all;" onclick="newGame()">НОВА ГРА</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <aside class="panel">
+    <div class="panel-section">
+      <div class="panel-label">Хід за ходом</div>
+      <div class="log-list" id="log-list">
+        <div class="log-item" style="opacity:.3; font-size:.68rem">— поки нічого —</div>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-label">Інфо</div>
+      <div class="info-row">Backend <span id="info-be">—</span></div>
+      <div class="info-row">Хід <span id="info-move">—</span></div>
+      <div class="info-row">Поле <span id="info-size">—</span></div>
+    </div>
+  </aside>
+</main>
+
+<script>
+const PORTS = { haskell: 3000, prolog: 3001 };
+let backend = 'haskell';
+let gs = null;
+let moveLog = [];
+let hovered = null;
+
+const CELL = 80, PAD = 24, DOT_R = 5;
+const NS = 'http://www.w3.org/2000/svg';
+
+function base() { return `http://localhost:${PORTS[backend]}`; }
+
+// ── BACKEND ──
+function switchBackend(b) {
+  backend = b;
+  document.getElementById('btn-hs').className = 'be-btn hs'+(b==='haskell'?' active':'');
+  document.getElementById('btn-pl').className = 'be-btn pl'+(b==='prolog'?' active':'');
+  checkStatus();
+  if (gs) fetchState();
+}
+switchBackend('haskell');
+
+// ── API ──
+async function api(path, method='GET', body=null) {
+  const opts = { method, headers:{'Content-Type':'application/json'} };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(base()+path, opts);
+  return r.json();
+}
+
+async function fetchState() {
+  try { applyState(await api('/state')); }
+  catch(e) { showErr('Не вдалось отримати стан'); }
+}
+
+async function newGame() {
+  hideErr();
+  const size  = +document.getElementById('size').value;
+  const name1 = document.getElementById('name1').value || 'Гравець 1';
+  const name2 = document.getElementById('name2').value || 'Гравець 2';
+  moveLog = [];
+  lineOwners = {};
+  try {
+    const d = await api('/new','POST',{size,name1,name2});
+    if (d.error) { showErr(d.error); return; }
+    applyState(d);
+    setStatus('online');
+  } catch(e) {
+    showErr("Не вдалось з'єднатись.");
+    setStatus('offline');
+  }
+}
+
+let sending = false;
+let lineOwners = {}; // key: "dir,row,col" → player (1 or 2)
+async function sendMove(dir, row, col) {
+  if (!gs || gs.over || sending) return;
+  sending = true;
+  try {
+    const prev = gs;
+    const d = await api('/move','POST',{dir,row,col});
+    if (d.error) { showErr(d.error); return; }
+    hideErr();
+    const p = prev.current;
+    const pname = p===1?prev.name1:prev.name2;
+    const cap = (d.score1+d.score2)-(prev.score1+prev.score2);
+    moveLog.push({n:d.moveCount,text:`${pname} ${dir==='H'?'→':'↓'}(${row},${col})`,cap,p});
+    // track which player drew each line
+    lineOwners[`${dir},${row},${col}`] = p;
+    applyState(d);
+  } catch(e) { showErr('Помилка сервера.'); }
+  finally { sending = false; }
+}
+
+// ── STATE → UI ──
+function applyState(d) {
+  gs = d;
+  renderBoard();
+  renderScores();
+  renderLog();
+  renderInfo();
+  const wo = document.getElementById('win-overlay');
+  if (d.over) {
+    wo.style.display = 'flex';
+    const col = d.score1>d.score2?'var(--p1)':d.score2>d.score1?'var(--p2)':'var(--text)';
+    document.getElementById('win-text').textContent = d.winner;
+    document.getElementById('win-text').style.color = col;
+    document.getElementById('win-scores').textContent =
+      `${d.name1}: ${d.score1}  ·  ${d.name2}: ${d.score2}`;
+  } else {
+    wo.style.display = 'none';
+  }
+}
+
+// ── BOARD ──
+function mkEl(tag, attrs) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k,v] of Object.entries(attrs)) e.setAttribute(k, String(v));
+  return e;
+}
+
+function lineColor(dir, r, c) {
+  if (!gs) return '#666';
+  const n = gs.size;
+  // First check: adjacent box owner
+  const ownerMap = {};
+  (gs.owners||[]).forEach(o => { ownerMap[`${o.row},${o.col}`] = o.player; });
+  const boxes = dir==='H' ? [[r,c],[r-1,c]] : [[r,c],[r,c-1]];
+  for (const [br,bc] of boxes) {
+    if (br>=0&&br<n&&bc>=0&&bc<n&&ownerMap[`${br},${bc}`]) {
+      const p = ownerMap[`${br},${bc}`];
+      return p===1 ? '#ff4d4d' : '#4d9fff';
+    }
+  }
+  // No box — use who drew this line
+  const p = lineOwners[`${dir},${r},${c}`];
+  if (p===1) return '#ff4d4d';
+  if (p===2) return '#4d9fff';
+  return '#666';
+}
+
+function renderBoard() {
+  if (!gs) return;
+  const n = gs.size;
+  const px = PAD*2+n*CELL;
+  const svg = document.getElementById('board-svg');
+  svg.setAttribute('width', px);
+  svg.setAttribute('height', px);
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+  const drawn = new Set((gs.lines||[]).map(l=>`${l.dir},${l.row},${l.col}`));
+  const ownerMap = {};
+  (gs.owners||[]).forEach(o => { ownerMap[`${o.row},${o.col}`] = o.player; });
+
+  // Box fills
+  for (let r=0;r<n;r++) for (let c=0;c<n;c++) {
+    const p = ownerMap[`${r},${c}`];
+    if (!p) continue;
+    const fill   = p===1?'rgba(255,77,77,.13)':'rgba(77,159,255,.13)';
+    const stroke = p===1?'rgba(255,77,77,.4)':'rgba(77,159,255,.4)';
+    const tc     = p===1?'#ff4d4d':'#4d9fff';
+    const init   = (p===1?(gs.name1||'A')[0]:(gs.name2||'B')[0]).toUpperCase();
+    svg.appendChild(mkEl('rect',{x:PAD+c*CELL+4,y:PAD+r*CELL+4,width:CELL-8,height:CELL-8,rx:4,fill,stroke,'stroke-width':1}));
+    const t = mkEl('text',{x:PAD+c*CELL+CELL/2,y:PAD+r*CELL+CELL/2+7,
+      'text-anchor':'middle','font-family':'Unbounded,sans-serif',
+      'font-size':16,'font-weight':900,fill:tc,opacity:.7});
+    t.textContent = init;
+    svg.appendChild(t);
+  }
+
+  // Lines
+  for (let r=0;r<=n;r++) for (let c=0;c<n;c++) {
+    const k=`H,${r},${c}`;
+    const isDrw=drawn.has(k);
+    const isHov=hovered&&hovered.dir==='H'&&hovered.row===r&&hovered.col===c;
+    const stroke = isDrw?lineColor('H',r,c):isHov?(gs.current===1?'#ff4d4d':'#4d9fff'):'#252525';
+    const sw = isDrw?5:isHov?4:2;
+    const op = isDrw?1:isHov?0.8:1;
+    svg.appendChild(mkEl('line',{x1:PAD+c*CELL,y1:PAD+r*CELL,x2:PAD+(c+1)*CELL,y2:PAD+r*CELL,
+      stroke,'stroke-width':sw,'stroke-linecap':'round',opacity:op}));
+  }
+  for (let r=0;r<n;r++) for (let c=0;c<=n;c++) {
+    const k=`V,${r},${c}`;
+    const isDrw=drawn.has(k);
+    const isHov=hovered&&hovered.dir==='V'&&hovered.row===r&&hovered.col===c;
+    const stroke = isDrw?lineColor('V',r,c):isHov?(gs.current===1?'#ff4d4d':'#4d9fff'):'#252525';
+    const sw = isDrw?5:isHov?4:2;
+    const op = isDrw?1:isHov?0.8:1;
+    svg.appendChild(mkEl('line',{x1:PAD+c*CELL,y1:PAD+r*CELL,x2:PAD+c*CELL,y2:PAD+(r+1)*CELL,
+      stroke,'stroke-width':sw,'stroke-linecap':'round',opacity:op}));
+  }
+
+  // Dots
+  for (let r=0;r<=n;r++) for (let c=0;c<=n;c++) {
+    svg.appendChild(mkEl('circle',{cx:PAD+c*CELL,cy:PAD+r*CELL,r:DOT_R,fill:'#555'}));
+  }
+}
+
+// ── SINGLE GLOBAL MOUSE HANDLER (set once, never duplicated) ──
+function getNearestLine(mx, my) {
+  if (!gs || gs.over) return null;
+  const n = gs.size;
+  const drawn = new Set((gs.lines||[]).map(l=>`${l.dir},${l.row},${l.col}`));
+  let best=18, bDir=null, bR=-1, bC=-1;
+  for (let r=0;r<=n;r++) for (let c=0;c<n;c++) {
+    if (drawn.has(`H,${r},${c}`)) continue;
+    const lx1=PAD+c*CELL+4, lx2=PAD+(c+1)*CELL-4, ly=PAD+r*CELL;
+    if (mx<lx1||mx>lx2) continue;
+    const d=Math.abs(my-ly);
+    if (d<best){best=d;bDir='H';bR=r;bC=c;}
+  }
+  for (let r=0;r<n;r++) for (let c=0;c<=n;c++) {
+    if (drawn.has(`V,${r},${c}`)) continue;
+    const lx=PAD+c*CELL, ly1=PAD+r*CELL+4, ly2=PAD+(r+1)*CELL-4;
+    if (my<ly1||my>ly2) continue;
+    const d=Math.abs(mx-lx);
+    if (d<best){best=d;bDir='V';bR=r;bC=c;}
+  }
+  return bDir ? {dir:bDir, row:bR, col:bC} : null;
+}
+
+function getSvgCoords(e) {
+  const svg = document.getElementById('board-svg');
+  const bb = svg.getBoundingClientRect();
+  return { mx: e.clientX-bb.left, my: e.clientY-bb.top };
+}
+
+function isOverSvg(e) {
+  const svg = document.getElementById('board-svg');
+  const bb = svg.getBoundingClientRect();
+  return e.clientX>=bb.left && e.clientX<=bb.right &&
+         e.clientY>=bb.top  && e.clientY<=bb.bottom;
+}
+
+// Attach once to document
+document.addEventListener('mousemove', function(e) {
+  if (!gs || !isOverSvg(e)) {
+    if (hovered) { hovered=null; renderBoard(); }
+    return;
+  }
+  const {mx,my} = getSvgCoords(e);
+  const hit = getNearestLine(mx, my);
+  const same = hit && hovered &&
+    hit.dir===hovered.dir && hit.row===hovered.row && hit.col===hovered.col;
+  if (!same) { hovered=hit; renderBoard(); }
+});
+
+document.addEventListener('click', function(e) {
+  if (!gs || !isOverSvg(e)) return;
+  const {mx,my} = getSvgCoords(e);
+  const hit = getNearestLine(mx, my);
+  if (hit) sendMove(hit.dir, hit.row, hit.col);
+});
+
+// ── SCORES ──
+function renderScores() {
+  if (!gs) return;
+  document.getElementById('lbl-p1').textContent = gs.name1;
+  document.getElementById('lbl-p2').textContent = gs.name2;
+  document.getElementById('sc-p1').textContent  = gs.score1;
+  document.getElementById('sc-p2').textContent  = gs.score2;
+  document.getElementById('card-p1').className = 'player-card'+(gs.current===1&&!gs.over?' active-p1':'');
+  document.getElementById('card-p2').className = 'player-card'+(gs.current===2&&!gs.over?' active-p2':'');
+  const tl = document.getElementById('turn');
+  if (gs.over) { tl.textContent = gs.winner; }
+  else {
+    const who=gs.current===1?gs.name1:gs.name2;
+    const col=gs.current===1?'var(--p1)':'var(--p2)';
+    tl.innerHTML=`хід: <span style="color:${col};font-weight:700">${who}</span>`;
+  }
+}
+
+// ── LOG ──
+function renderLog() {
+  const el = document.getElementById('log-list');
+  if (!moveLog.length) {
+    el.innerHTML='<div class="log-item" style="opacity:.3;font-size:.68rem">— поки нічого —</div>';
+    return;
+  }
+  el.innerHTML = [...moveLog].reverse().map(e=>`
+    <div class="log-item p${e.p}">
+      <span class="log-n">#${e.n}</span>
+      <span class="log-move">${e.text}</span>
+      ${e.cap>0?`<span class="log-cap">+${e.cap}</span>`:''}
+    </div>`).join('');
+}
+
+// ── INFO ──
+function renderInfo() {
+  if (!gs) return;
+  document.getElementById('info-be').textContent = backend==='haskell'?'Haskell':'SWI-Prolog';
+  document.getElementById('info-move').textContent = `#${gs.moveCount}`;
+  document.getElementById('info-size').textContent = `${gs.size} × ${gs.size}`;
+}
+
+// ── STATUS ──
+function setStatus(s) {
+  document.getElementById('sdot').className='status-dot '+s;
+  document.getElementById('stxt').textContent=s==='online'?'онлайн':s==='offline'?'офлайн':'…';
+}
+async function checkStatus() {
+  setStatus('checking');
+  try { await fetch(base()+'/state',{signal:AbortSignal.timeout(2500)}); setStatus('online'); }
+  catch(e) { setStatus('offline'); }
+}
+
+function showErr(msg){const e=document.getElementById('err-box');e.textContent=msg;e.style.display='block';}
+function hideErr(){document.getElementById('err-box').style.display='none';}
+
+checkStatus();
+</script>
+</body>
+</html>
