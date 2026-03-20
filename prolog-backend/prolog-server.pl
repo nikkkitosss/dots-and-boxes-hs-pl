@@ -34,7 +34,8 @@
 server(Port) :-
     http_server(http_dispatch, [port(Port)]),
     init_game(3, 'Гравець 1', 'Гравець 2', medium),
-    format("Prolog backend -> http://localhost:~w~n", [Port]).
+    format("Prolog backend -> http://localhost:~w~n", [Port]),
+    thread_get_message(_).
 
 handle_state(_Request) :-
     state_json(JSON), reply_json_dict(JSON).

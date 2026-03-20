@@ -3,3 +3,9 @@ dist-newstyle/
 cabal.sandbox.config
 *.o
 *.hi
+
+dist-newstyle/
+*.hi
+*.o
+.ghc.environment.*
+.DS_Store

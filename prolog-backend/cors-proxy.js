@@ -16,7 +16,7 @@ const server = http.createServer((req, res) => {
   }
 
   const options = {
-    hostname: 'localhost',
+    hostname: '127.0.0.1',
     port: PROLOG_PORT,
     path: req.url,
     method: req.method,
