@@ -672,7 +672,17 @@ const NS = 'http://www.w3.org/2000/svg';
 // ============================================================
 // BACKEND
 // ============================================================
-function base() { return `http://localhost:${PORTS[backend]}`; }
+const RENDER_URLS = {
+  haskell: 'https://dots-and-boxes-hs-pl.onrender.com',
+  prolog:  'https://dots-and-boxes-hs-pl-1.onrender.com',
+};
+function base() {
+  const isLocal = window.location.hostname === 'localhost' || 
+                  window.location.hostname === '127.0.0.1';
+  return isLocal
+    ? `http://localhost:${PORTS[backend]}`
+    : RENDER_URLS[backend];
+}
 
 function switchBackend(b) {
   backend = b;
