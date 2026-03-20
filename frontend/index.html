@@ -11,14 +11,19 @@
 :root {
   --bg: #0d0d0d;
   --surface: #141414;
+  --surface2: #1a1a1a;
   --border: #252525;
   --p1: #ff4d4d;
   --p2: #4d9fff;
-  --p1dim: rgba(255,77,77,.15);
-  --p2dim: rgba(77,159,255,.15);
+  --ai: #a855f7;
+  --p1dim: rgba(255,77,77,.13);
+  --p2dim: rgba(77,159,255,.13);
+  --aidim: rgba(168,85,247,.13);
   --text: #f0f0f0;
   --muted: #555;
+  --muted2: #333;
   --green: #4dff91;
+  --yellow: #f59e0b;
 }
 
 body {
@@ -36,15 +41,18 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.2rem 2rem;
+  padding: 1rem 1.6rem;
   border-bottom: 1px solid var(--border);
+  gap: .8rem;
+  flex-wrap: wrap;
 }
 
 .logo {
   font-family: 'Unbounded', sans-serif;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 900;
   letter-spacing: -.02em;
+  white-space: nowrap;
 }
 .logo .dot { color: var(--p1); }
 .logo .box { color: var(--p2); }
@@ -52,10 +60,10 @@ header {
 .header-right {
   display: flex;
   align-items: center;
-  gap: .8rem;
+  gap: .6rem;
+  flex-wrap: wrap;
 }
 
-/* Backend switcher pill */
 .be-switcher {
   display: flex;
   background: var(--surface);
@@ -64,9 +72,9 @@ header {
   overflow: hidden;
 }
 .be-btn {
-  padding: .35rem .9rem;
+  padding: .3rem .8rem;
   font-family: 'Space Mono', monospace;
-  font-size: .7rem;
+  font-size: .65rem;
   background: none;
   border: none;
   color: var(--muted);
@@ -82,9 +90,9 @@ header {
   display: flex;
   align-items: center;
   gap: .4rem;
-  font-size: .68rem;
+  font-size: .65rem;
   color: var(--muted);
-  padding: .35rem .8rem;
+  padding: .3rem .7rem;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -94,67 +102,175 @@ header {
   border-radius: 50%;
   background: var(--muted);
   transition: .3s;
+  flex-shrink: 0;
 }
 .status-dot.online  { background: var(--green); box-shadow: 0 0 6px var(--green); }
 .status-dot.offline { background: var(--p1); }
-.status-dot.checking { background: #f59e0b; animation: pulse .8s infinite; }
+.status-dot.checking { background: var(--yellow); animation: pulse .8s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
 /* ── MAIN ── */
 main {
   display: grid;
-  grid-template-columns: 280px 1fr 280px;
+  grid-template-columns: 270px 1fr 270px;
   gap: 0;
   height: calc(100vh - 57px);
+  min-height: 0;
 }
 
 /* ── PANELS ── */
 .panel {
   border-right: 1px solid var(--border);
-  padding: 1.4rem;
+  padding: 1.2rem;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1rem;
   overflow-y: auto;
 }
 .panel:last-child {
   border-right: none;
   border-left: 1px solid var(--border);
 }
+.panel::-webkit-scrollbar { width: 2px; }
+.panel::-webkit-scrollbar-thumb { background: var(--border); }
 
-.panel-section { display: flex; flex-direction: column; gap: .6rem; }
+.panel-section { display: flex; flex-direction: column; gap: .5rem; }
 .panel-label {
-  font-size: .62rem;
+  font-size: .58rem;
   text-transform: uppercase;
-  letter-spacing: .15em;
+  letter-spacing: .18em;
   color: var(--muted);
-  margin-bottom: .2rem;
+  margin-bottom: .15rem;
 }
 
 /* Setup inputs */
-.field { display: flex; flex-direction: column; gap: .3rem; }
-.field label { font-size: .65rem; color: var(--muted); letter-spacing: .08em; }
+.field { display: flex; flex-direction: column; gap: .25rem; }
+.field label { font-size: .6rem; color: var(--muted); letter-spacing: .08em; }
 .field input, .field select {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 5px;
   color: var(--text);
   font-family: 'Space Mono', monospace;
-  font-size: .8rem;
-  padding: .45rem .7rem;
+  font-size: .75rem;
+  padding: .4rem .6rem;
   outline: none;
   transition: .15s;
   width: 100%;
+  appearance: none;
 }
-.field input:focus, .field select:focus { border-color: #444; }
+.field input:focus, .field select:focus { border-color: #3a3a3a; }
+
+/* Mode pills */
+.mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .4rem;
+}
+.mode-btn {
+  padding: .45rem .4rem;
+  font-family: 'Space Mono', monospace;
+  font-size: .6rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: .15s;
+  text-align: center;
+  line-height: 1.4;
+}
+.mode-btn:hover { border-color: #333; color: var(--text); }
+.mode-btn.active {
+  border-color: var(--ai);
+  background: var(--aidim);
+  color: var(--ai);
+}
+.mode-btn.active.hh { border-color: var(--green); background: rgba(77,255,145,.1); color: var(--green); }
+
+/* Difficulty */
+.diff-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .3rem;
+}
+.diff-btn {
+  padding: .35rem .2rem;
+  font-family: 'Space Mono', monospace;
+  font-size: .55rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: .15s;
+  text-align: center;
+}
+.diff-btn:hover { color: var(--text); }
+.diff-btn.active { border-color: var(--yellow); background: rgba(245,158,11,.1); color: var(--yellow); }
+
+/* CLP badge */
+.clp-badge {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem .7rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: .65rem;
+  color: var(--muted);
+}
+.clp-label {
+  font-family: 'Unbounded', sans-serif;
+  font-size: .55rem;
+  color: var(--ai);
+  background: var(--aidim);
+  border: 1px solid rgba(168,85,247,.25);
+  border-radius: 3px;
+  padding: .1rem .35rem;
+  white-space: nowrap;
+}
+.clp-badge span { flex: 1; font-size: .6rem; }
+
+/* Depth meter */
+.depth-meter {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+}
+.depth-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: .62rem;
+}
+.depth-label { color: var(--muted); }
+.depth-val {
+  font-family: 'Unbounded', sans-serif;
+  font-size: .7rem;
+  color: var(--yellow);
+}
+.depth-bar {
+  height: 4px;
+  background: var(--muted2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.depth-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--yellow), #ff6b00);
+  border-radius: 2px;
+  transition: width .4s ease;
+}
 
 .btn-new {
   width: 100%;
-  padding: .6rem;
+  padding: .55rem;
   background: var(--text);
   color: var(--bg);
   font-family: 'Unbounded', sans-serif;
-  font-size: .72rem;
+  font-size: .68rem;
   font-weight: 700;
   letter-spacing: .04em;
   border: none;
@@ -168,83 +284,132 @@ main {
 
 /* Player cards */
 .player-card {
-  padding: .7rem .9rem;
+  padding: .65rem .85rem;
   border-radius: 6px;
   border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   transition: .2s;
+  gap: .5rem;
 }
-.player-card.active-p1 {
-  border-color: var(--p1);
-  background: var(--p1dim);
-}
-.player-card.active-p2 {
-  border-color: var(--p2);
-  background: var(--p2dim);
-}
-.player-name { font-size: .85rem; font-weight: 700; }
+.player-card.active-p1 { border-color: var(--p1); background: var(--p1dim); }
+.player-card.active-p2 { border-color: var(--p2); background: var(--p2dim); }
+.player-left { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+.player-name { font-size: .8rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .player-name.p1 { color: var(--p1); }
 .player-name.p2 { color: var(--p2); }
+.player-type {
+  font-size: .55rem;
+  color: var(--muted);
+  letter-spacing: .06em;
+}
+.player-type.comp-tag { color: var(--ai); }
 .player-score {
   font-family: 'Unbounded', sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 900;
+  flex-shrink: 0;
 }
 .turn-indicator {
-  font-size: .7rem;
+  font-size: .68rem;
   color: var(--muted);
   text-align: center;
   min-height: 1.2em;
 }
 
+/* AI thinking indicator */
+.ai-thinking {
+  display: none;
+  align-items: center;
+  gap: .5rem;
+  padding: .45rem .7rem;
+  background: var(--aidim);
+  border: 1px solid rgba(168,85,247,.25);
+  border-radius: 5px;
+  font-size: .65rem;
+  color: var(--ai);
+}
+.ai-thinking.visible { display: flex; }
+.thinking-dots span {
+  display: inline-block;
+  animation: blink 1.2s infinite;
+}
+.thinking-dots span:nth-child(2) { animation-delay: .2s; }
+.thinking-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
+
+/* Last AI move highlight */
+.ai-move-badge {
+  display: none;
+  align-items: center;
+  gap: .4rem;
+  padding: .35rem .6rem;
+  background: var(--aidim);
+  border: 1px solid rgba(168,85,247,.2);
+  border-radius: 4px;
+  font-size: .62rem;
+  color: var(--ai);
+}
+.ai-move-badge.visible { display: flex; }
+
 /* Move log */
 .log-list {
   display: flex;
   flex-direction: column;
-  gap: .3rem;
-  max-height: 220px;
+  gap: .25rem;
+  max-height: 200px;
   overflow-y: auto;
   padding-right: .2rem;
 }
 .log-list::-webkit-scrollbar { width: 2px; }
 .log-list::-webkit-scrollbar-thumb { background: var(--border); }
-
 .log-item {
   display: flex;
   align-items: center;
-  gap: .5rem;
-  font-size: .68rem;
+  gap: .4rem;
+  font-size: .63rem;
   color: var(--muted);
-  padding: .25rem 0;
-  border-bottom: 1px solid #1a1a1a;
+  padding: .2rem 0;
+  border-bottom: 1px solid #181818;
 }
-.log-n { opacity: .4; min-width: 20px; }
+.log-n { opacity: .4; min-width: 18px; flex-shrink: 0; }
 .log-item.p1 .log-move { color: var(--p1); }
 .log-item.p2 .log-move { color: var(--p2); }
-.log-cap { opacity: .5; margin-left: auto; }
+.log-move { flex: 1; }
+.log-cap { color: var(--green); font-size: .58rem; }
+.log-comp-tag {
+  font-size: .5rem;
+  color: var(--ai);
+  background: var(--aidim);
+  border-radius: 2px;
+  padding: .05rem .25rem;
+  flex-shrink: 0;
+}
 
 /* Error */
 .err-box {
-  padding: .5rem .7rem;
+  padding: .45rem .6rem;
   background: rgba(255,77,77,.08);
   border: 1px solid rgba(255,77,77,.2);
   border-radius: 5px;
-  font-size: .72rem;
+  font-size: .68rem;
   color: #ff8080;
   display: none;
 }
 
-/* Info section */
+/* Info rows */
 .info-row {
   display: flex;
   justify-content: space-between;
-  font-size: .7rem;
+  font-size: .65rem;
   color: var(--muted);
-  padding: .15rem 0;
+  padding: .12rem 0;
+  border-bottom: 1px solid #181818;
 }
-.info-row span { color: var(--text); }
+.info-row:last-child { border-bottom: none; }
+.info-row span { color: var(--text); font-size: .65rem; }
+.info-row .ai-val { color: var(--ai); }
 
 /* ── CENTER: BOARD ── */
 .board-center {
@@ -252,75 +417,95 @@ main {
   align-items: center;
   justify-content: center;
   position: relative;
-  pointer-events: none;
-}
-
-.board-wrap {
-  position: relative;
-  pointer-events: none;
+  overflow: hidden;
 }
 
 #board-svg {
   display: block;
   overflow: visible;
-  pointer-events: all;
+  cursor: crosshair;
 }
 
 /* Win overlay */
 .win-overlay {
   position: absolute;
-  inset: -20px;
+  inset: 0;
   pointer-events: none;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  background: rgba(13,13,13,.92);
-  backdrop-filter: blur(12px);
-  border-radius: 12px;
+  background: rgba(13,13,13,.93);
+  backdrop-filter: blur(16px);
   animation: fadeIn .3s ease;
   z-index: 10;
 }
 @keyframes fadeIn { from { opacity:0; transform:scale(.97) } to { opacity:1; transform:scale(1) } }
 .win-text {
   font-family: 'Unbounded', sans-serif;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 900;
   text-align: center;
   line-height: 1.2;
+  padding: 0 2rem;
 }
-.win-scores {
-  font-size: .75rem;
-  color: var(--muted);
+.win-scores { font-size: .72rem; color: var(--muted); }
+.win-depth {
+  font-size: .6rem;
+  color: var(--ai);
+  padding: .3rem .8rem;
+  background: var(--aidim);
+  border: 1px solid rgba(168,85,247,.2);
+  border-radius: 4px;
 }
 .btn-again {
   pointer-events: all;
-  padding: .6rem 2rem;
+  padding: .55rem 1.8rem;
   background: var(--text);
   color: var(--bg);
   font-family: 'Unbounded', sans-serif;
-  font-size: .72rem;
+  font-size: .68rem;
   font-weight: 700;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: .3rem;
+  margin-top: .2rem;
   transition: .15s;
 }
 .btn-again:hover { opacity: .85; }
 
+/* divider */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: .2rem 0;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
-  main {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-    height: auto;
-  }
-  .panel { border-right: none; border-bottom: 1px solid var(--border); }
+  main { grid-template-columns: 1fr; grid-template-rows: auto auto auto; height: auto; }
+  .panel { border-right: none; border-bottom: 1px solid var(--border); max-height: none; }
   .panel:last-child { border-left: none; border-top: 1px solid var(--border); }
-  .board-center { padding: 1.5rem; }
+  .board-center { padding: 1.5rem; height: 60vw; min-height: 300px; }
 }
+
+/* AI-auto play button */
+.btn-ai-step {
+  width: 100%;
+  padding: .45rem;
+  background: var(--aidim);
+  color: var(--ai);
+  font-family: 'Space Mono', monospace;
+  font-size: .65rem;
+  border: 1px solid rgba(168,85,247,.3);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: .15s;
+  display: none;
+}
+.btn-ai-step:hover { background: rgba(168,85,247,.22); }
+.btn-ai-step.visible { display: block; }
 </style>
 </head>
 <body>
@@ -331,8 +516,8 @@ main {
   </div>
   <div class="header-right">
     <div class="be-switcher">
-      <button class="be-btn hs" id="btn-hs" onclick="switchBackend('haskell')">🟠 Haskell</button>
-      <button class="be-btn pl" id="btn-pl" onclick="switchBackend('prolog')">🔵 Prolog</button>
+      <button class="be-btn hs" id="btn-hs" onclick="switchBackend('haskell')">🟠 Haskell :3000</button>
+      <button class="be-btn pl" id="btn-pl" onclick="switchBackend('prolog')">🔵 Prolog :3001</button>
     </div>
     <div class="status-pill">
       <div class="status-dot checking" id="sdot"></div>
@@ -345,13 +530,13 @@ main {
   <!-- LEFT PANEL -->
   <aside class="panel">
     <div class="panel-section">
-      <div class="panel-label">Налаштування</div>
+      <div class="panel-label">Гравці</div>
       <div class="field">
-        <label>Гравець 1</label>
+        <label>Гравець 1 / Комп-1</label>
         <input id="name1" value="Аліса">
       </div>
       <div class="field">
-        <label>Гравець 2</label>
+        <label>Гравець 2 / Комп-2</label>
         <input id="name2" value="Боб">
       </div>
       <div class="field">
@@ -363,32 +548,54 @@ main {
           <option value="5">5 × 5</option>
         </select>
       </div>
-      <button class="btn-new" onclick="newGame()">НОВА ГРА</button>
-      <div class="err-box" id="err-box"></div>
     </div>
 
     <div class="panel-section">
-      <div class="panel-label">Рахунок</div>
-      <div class="player-card" id="card-p1">
-        <span class="player-name p1" id="lbl-p1">Аліса</span>
-        <span class="player-score" id="sc-p1" style="color:var(--p1)">0</span>
+      <div class="panel-label">Режим гри</div>
+      <div class="mode-grid">
+        <button class="mode-btn hh active" id="mode-hh" onclick="setMode('human-human')">Людина vs Людина<br><small>Людина–Людина</small></button>
+        <button class="mode-btn" id="mode-ha" onclick="setMode('human-ai')">Людина vs Комп<br><small>Людина–Комп</small></button>
+        <button class="mode-btn" id="mode-ah" onclick="setMode('ai-human')">Комп vs Людина<br><small>Комп–Людина</small></button>
+        <button class="mode-btn" id="mode-aa" onclick="setMode('ai-ai')">Комп vs Комп<br><small>Комп–Комп</small></button>
       </div>
-      <div class="player-card" id="card-p2">
-        <span class="player-name p2" id="lbl-p2">Боб</span>
-        <span class="player-score" id="sc-p2" style="color:var(--p2)">0</span>
-      </div>
-      <div class="turn-indicator" id="turn">— почніть гру —</div>
     </div>
+
+    <div class="panel-section" id="diff-section">
+      <div class="panel-label">Складність (мінімакс)</div>
+      <div class="diff-row">
+        <button class="diff-btn" id="diff-easy"   onclick="setDiff('easy')">Легко<br><small>2 нп</small></button>
+        <button class="diff-btn active" id="diff-medium" onclick="setDiff('medium')">Середн<br><small>4 нп</small></button>
+        <button class="diff-btn" id="diff-hard"   onclick="setDiff('hard')">Важко<br><small>6 нп</small></button>
+        <button class="diff-btn" id="diff-expert" onclick="setDiff('expert')">Експерт<br><small>8 нп</small></button>
+      </div>
+
+      <div class="depth-meter">
+        <div class="depth-row">
+          <span class="depth-label">Глибина пошуку:</span>
+          <span class="depth-val" id="depth-val">4 нп</span>
+        </div>
+        <div class="depth-bar"><div class="depth-fill" id="depth-fill" style="width:50%"></div></div>
+      </div>
+
+      <div class="clp-badge">
+        <span class="clp-label">CLP(FD)</span>
+        <span id="clp-status">Фільтр ходів активний</span>
+      </div>
+    </div>
+
+    <button class="btn-new" onclick="newGame()">▶ НОВА ГРА</button>
+    <div class="err-box" id="err-box"></div>
   </aside>
 
   <!-- CENTER: BOARD -->
   <div class="board-center" id="board-center">
     <div style="position:relative;display:inline-block;">
       <svg id="board-svg" style="display:block;overflow:visible;cursor:crosshair;"></svg>
-      <div class="win-overlay" id="win-overlay" style="display:none;pointer-events:none;">
+      <div class="win-overlay" id="win-overlay" style="display:none;">
         <div class="win-text" id="win-text">—</div>
         <div class="win-scores" id="win-scores"></div>
-        <button class="btn-again" style="pointer-events:all;" onclick="newGame()">НОВА ГРА</button>
+        <div class="win-depth" id="win-depth" style="display:none;"></div>
+        <button class="btn-again" onclick="newGame()">▶ НОВА ГРА</button>
       </div>
     </div>
   </div>
@@ -396,116 +603,292 @@ main {
   <!-- RIGHT PANEL -->
   <aside class="panel">
     <div class="panel-section">
+      <div class="panel-label">Рахунок</div>
+      <div class="player-card" id="card-p1">
+        <div class="player-left">
+          <span class="player-name p1" id="lbl-p1">Аліса</span>
+          <span class="player-type" id="type-p1">Людина</span>
+        </div>
+        <span class="player-score" id="sc-p1" style="color:var(--p1)">0</span>
+      </div>
+      <div class="player-card" id="card-p2">
+        <div class="player-left">
+          <span class="player-name p2" id="lbl-p2">Боб</span>
+          <span class="player-type" id="type-p2">Людина</span>
+        </div>
+        <span class="player-score" id="sc-p2" style="color:var(--p2)">0</span>
+      </div>
+      <div class="turn-indicator" id="turn">— почніть гру —</div>
+
+      <div class="ai-thinking" id="ai-thinking">
+        <span>Комп'ютер рахує</span>
+        <span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>
+      </div>
+      <div class="ai-move-badge" id="ai-move-badge">
+        Комп <span id="ai-move-text">—</span>
+      </div>
+      <button class="btn-ai-step" id="btn-ai-step" onclick="triggerAIStep()">⚡ Крок комп'ютера</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="panel-section">
       <div class="panel-label">Хід за ходом</div>
       <div class="log-list" id="log-list">
-        <div class="log-item" style="opacity:.3; font-size:.68rem">— поки нічого —</div>
+        <div class="log-item" style="opacity:.3; font-size:.63rem">— поки нічого —</div>
       </div>
     </div>
 
     <div class="panel-section">
       <div class="panel-label">Інфо</div>
       <div class="info-row">Backend <span id="info-be">—</span></div>
-      <div class="info-row">Хід <span id="info-move">—</span></div>
+      <div class="info-row">Режим <span id="info-mode" class="ai-val">—</span></div>
+      <div class="info-row">Складність <span id="info-diff" class="ai-val">—</span></div>
+      <div class="info-row">Напів-ходи (глибина) <span id="info-depth" class="ai-val">—</span></div>
+      <div class="info-row">CLP-constraint <span id="info-clp" class="ai-val">активний</span></div>
+      <div class="info-row">Хід № <span id="info-move">—</span></div>
       <div class="info-row">Поле <span id="info-size">—</span></div>
     </div>
   </aside>
 </main>
 
 <script>
+// ============================================================
+// STATE
+// ============================================================
 const PORTS = { haskell: 3000, prolog: 3001 };
-let backend = 'haskell';
-let gs = null;
-let moveLog = [];
-let hovered = null;
+let backend    = 'haskell';
+let gs         = null;
+let moveLog    = [];
+let lineOwners = {};   // "dir,row,col" → player int
+let hovered    = null;
+let currentMode = 'human-human';
+let currentDiff = 'medium';
+let aiAutoPlay  = null;  // interval for AI-AI
 
 const CELL = 80, PAD = 24, DOT_R = 5;
 const NS = 'http://www.w3.org/2000/svg';
 
+// ============================================================
+// BACKEND
+// ============================================================
 function base() { return `http://localhost:${PORTS[backend]}`; }
 
-// ── BACKEND ──
 function switchBackend(b) {
   backend = b;
-  document.getElementById('btn-hs').className = 'be-btn hs'+(b==='haskell'?' active':'');
-  document.getElementById('btn-pl').className = 'be-btn pl'+(b==='prolog'?' active':'');
+  document.getElementById('btn-hs').className = 'be-btn hs' + (b==='haskell' ? ' active' : '');
+  document.getElementById('btn-pl').className = 'be-btn pl' + (b==='prolog'  ? ' active' : '');
   checkStatus();
   if (gs) fetchState();
 }
 switchBackend('haskell');
 
-// ── API ──
+// ============================================================
+// MODE & DIFFICULTY UI
+// ============================================================
+function setMode(m) {
+  currentMode = m;
+  ['hh','ha','ah','aa'].forEach(id => {
+    document.getElementById('mode-'+id).classList.remove('active');
+  });
+  const map = {'human-human':'hh','human-ai':'ha','ai-human':'ah','ai-ai':'aa'};
+  const btn = document.getElementById('mode-' + map[m]);
+  btn.classList.add('active');
+  btn.classList.toggle('hh', m === 'human-human');
+}
+
+const DEPTH_MAP = { easy:2, medium:4, hard:6, expert:8 };
+
+function setDiff(d) {
+  currentDiff = d;
+  ['easy','medium','hard','expert'].forEach(id => {
+    document.getElementById('diff-'+id).classList.remove('active');
+  });
+  document.getElementById('diff-'+d).classList.add('active');
+  updateDepthMeter(DEPTH_MAP[d]);
+}
+
+function updateDepthMeter(depth) {
+  const maxDepth = 8;
+  document.getElementById('depth-val').textContent = depth + ' нп';
+  document.getElementById('depth-fill').style.width = (depth / maxDepth * 100) + '%';
+}
+updateDepthMeter(4);
+
+// ============================================================
+// API
+// ============================================================
 async function api(path, method='GET', body=null) {
   const opts = { method, headers:{'Content-Type':'application/json'} };
   if (body) opts.body = JSON.stringify(body);
   const r = await fetch(base()+path, opts);
+  if (!r.ok && r.status !== 400) throw new Error('HTTP '+r.status);
   return r.json();
 }
 
 async function fetchState() {
-  try { applyState(await api('/state')); }
-  catch(e) { showErr('Не вдалось отримати стан'); }
+  try { applyState(await api('/state')); } catch(e) { showErr('Не вдалось отримати стан'); }
 }
 
 async function newGame() {
   hideErr();
+  clearAIAuto();
   const size  = +document.getElementById('size').value;
   const name1 = document.getElementById('name1').value || 'Гравець 1';
   const name2 = document.getElementById('name2').value || 'Гравець 2';
   moveLog = [];
   lineOwners = {};
   try {
-    const d = await api('/new','POST',{size,name1,name2});
+    showAIThinking(false);
+    hideAILastMove();
+    // Завжди передаємо human-human на бекенд — фронтенд сам керує ходами комп'ютера
+    const d = await api('/new','POST',{ size, name1, name2, mode: 'human-human', difficulty: currentDiff });
     if (d.error) { showErr(d.error); return; }
+    // Зберігаємо справжній режим на фронтенді
+    d.mode = currentMode;
     applyState(d);
     setStatus('online');
+    // Запускаємо комп'ютер тільки якщо він ходить першим
+    if (currentMode === 'ai-ai' || currentMode === 'ai-human') {
+      scheduleAIAuto();
+    }
   } catch(e) {
     showErr("Не вдалось з'єднатись.");
     setStatus('offline');
   }
 }
 
+// ============================================================
+// MOVE
+// ============================================================
 let sending = false;
-let lineOwners = {}; // key: "dir,row,col" → player (1 or 2)
+
 async function sendMove(dir, row, col) {
   if (!gs || gs.over || sending) return;
+  if (!isHumanNow()) return;
+
   sending = true;
   try {
     const prev = gs;
+    const prevMode = currentMode;
     const d = await api('/move','POST',{dir,row,col});
     if (d.error) { showErr(d.error); return; }
     hideErr();
-    const p = prev.current;
-    const pname = p===1?prev.name1:prev.name2;
-    const cap = (d.score1+d.score2)-(prev.score1+prev.score2);
-    moveLog.push({n:d.moveCount,text:`${pname} ${dir==='H'?'→':'↓'}(${row},${col})`,cap,p});
-    // track which player drew each line
+    d.mode = prevMode;
+    const p   = prev.current;
+    const cap = (d.score1+d.score2) - (prev.score1+prev.score2);
+    moveLog.push({n:d.moveCount, text:`${p===1?prev.name1:prev.name2} ${dir==='H'?'→':'↓'}(${row},${col})`, cap, p, isAI:false});
     lineOwners[`${dir},${row},${col}`] = p;
+    hideAILastMove();
     applyState(d);
+    // Після ходу людини — запускаємо комп тільки якщо хід перейшов до нього
+    const turnSwitchedToComp = !d.over && !isHumanNow();
+    if (turnSwitchedToComp && (prevMode === 'human-ai' || prevMode === 'ai-human')) {
+      setTimeout(triggerAIStep, 400);
+    }
   } catch(e) { showErr('Помилка сервера.'); }
   finally { sending = false; }
 }
 
-// ── STATE → UI ──
+async function triggerAIStep() {
+  if (!gs || gs.over || sending) return;
+  sending = true;
+  showAIThinking(true);
+  try {
+    const prev = gs;
+    const prevMode = currentMode;
+    const d = await api('/ai','POST',{});
+    if (d.error) { showErr(d.error); return; }
+    hideErr();
+    d.mode = prevMode;
+    if (d.lastAI) {
+      const la = d.lastAI;
+      const aiP = prev.current;
+      const aiName = aiP===1 ? prev.name1 : prev.name2;
+      const cap = (d.score1+d.score2) - (prev.score1+prev.score2);
+      moveLog.push({
+        n: d.moveCount,
+        text: `${aiName} ${la.dir==='H'?'→':'↓'}(${la.row},${la.col})`,
+        cap, p: aiP, isAI: true
+      });
+      lineOwners[`${la.dir},${la.row},${la.col}`] = aiP;
+      showAILastMove(la);
+    }
+    applyState(d);
+    // Якщо комп захопив клітинку і ходить знову — продовжуємо
+    if (!d.over && !isHumanNow()) {
+      aiAutoPlay = setTimeout(triggerAIStep, 700);
+    }
+  } catch(e) { showErr("Помилка комп'ютера."); }
+  finally { sending = false; showAIThinking(false); }
+}
+
+// ============================================================
+// AI AUTO PLAY
+// ============================================================
+function scheduleAIAuto() {
+  clearAIAuto();
+  // Просто запускаємо перший крок — triggerAIStep сам продовжить рекурсивно
+  aiAutoPlay = setTimeout(triggerAIStep, 600);
+}
+
+function clearAIAuto() {
+  if (aiAutoPlay) { clearTimeout(aiAutoPlay); aiAutoPlay = null; }
+}
+
+// ============================================================
+// IS HUMAN TURN?
+// ============================================================
+function isHumanNow() {
+  if (!gs || gs.over) return false;
+  const m = gs.mode;
+  const p = gs.current;
+  if (m === 'human-human') return true;
+  if (m === 'human-ai')    return p === 1;
+  if (m === 'ai-human')    return p === 2;
+  if (m === 'ai-ai')       return false;
+  return true;
+}
+
+// ============================================================
+// APPLY STATE
+// ============================================================
 function applyState(d) {
   gs = d;
   renderBoard();
   renderScores();
   renderLog();
   renderInfo();
+
+  // Update depth meter from server
+  if (d.depth) updateDepthMeter(d.depth);
+
   const wo = document.getElementById('win-overlay');
   if (d.over) {
+    clearAIAuto();
     wo.style.display = 'flex';
-    const col = d.score1>d.score2?'var(--p1)':d.score2>d.score1?'var(--p2)':'var(--text)';
-    document.getElementById('win-text').textContent = d.winner;
-    document.getElementById('win-text').style.color = col;
-    document.getElementById('win-scores').textContent =
-      `${d.name1}: ${d.score1}  ·  ${d.name2}: ${d.score2}`;
+    const col = d.score1>d.score2 ? 'var(--p1)' : d.score2>d.score1 ? 'var(--p2)' : 'var(--text)';
+    document.getElementById('win-text').textContent  = d.winner;
+    document.getElementById('win-text').style.color  = col;
+    document.getElementById('win-scores').textContent = `${d.name1}: ${d.score1}  ·  ${d.name2}: ${d.score2}`;
+    const wd = document.getElementById('win-depth');
+    if (d.mode !== 'human-human' && d.depth) {
+      wd.style.display = 'block';
+      wd.textContent   = `Комп ${d.difficulty}  |  ${d.depth} напів-ходів`;
+    } else { wd.style.display = 'none'; }
   } else {
     wo.style.display = 'none';
   }
+
+  // Show AI step button
+  const stepBtn = document.getElementById('btn-ai-step');
+  if (d.mode === 'ai-ai' && !d.over) stepBtn.classList.add('visible');
+  else stepBtn.classList.remove('visible');
 }
 
-// ── BOARD ──
+// ============================================================
+// BOARD SVG
+// ============================================================
 function mkEl(tag, attrs) {
   const e = document.createElementNS(NS, tag);
   for (const [k,v] of Object.entries(attrs)) e.setAttribute(k, String(v));
@@ -514,191 +897,279 @@ function mkEl(tag, attrs) {
 
 function lineColor(dir, r, c) {
   if (!gs) return '#666';
-  const n = gs.size;
-  // First check: adjacent box owner
   const ownerMap = {};
   (gs.owners||[]).forEach(o => { ownerMap[`${o.row},${o.col}`] = o.player; });
   const boxes = dir==='H' ? [[r,c],[r-1,c]] : [[r,c],[r,c-1]];
   for (const [br,bc] of boxes) {
-    if (br>=0&&br<n&&bc>=0&&bc<n&&ownerMap[`${br},${bc}`]) {
-      const p = ownerMap[`${br},${bc}`];
-      return p===1 ? '#ff4d4d' : '#4d9fff';
+    if (br>=0 && br<gs.size && bc>=0 && bc<gs.size && ownerMap[`${br},${bc}`]) {
+      return ownerMap[`${br},${bc}`]===1 ? '#ff4d4d' : '#4d9fff';
     }
   }
-  // No box — use who drew this line
   const p = lineOwners[`${dir},${r},${c}`];
   if (p===1) return '#ff4d4d';
   if (p===2) return '#4d9fff';
-  return '#666';
+  return '#888';
+}
+
+function isLastAI(dir, r, c) {
+  if (!gs || !gs.lastAI) return false;
+  const la = gs.lastAI;
+  return la.dir === dir && la.row === r && la.col === c;
 }
 
 function renderBoard() {
   if (!gs) return;
-  const n = gs.size;
-  const px = PAD*2+n*CELL;
+  const n  = gs.size;
+  const px = PAD*2 + n*CELL;
   const svg = document.getElementById('board-svg');
   svg.setAttribute('width', px);
   svg.setAttribute('height', px);
   while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-  const drawn = new Set((gs.lines||[]).map(l=>`${l.dir},${l.row},${l.col}`));
+  const drawn    = new Set((gs.lines||[]).map(l=>`${l.dir},${l.row},${l.col}`));
   const ownerMap = {};
   (gs.owners||[]).forEach(o => { ownerMap[`${o.row},${o.col}`] = o.player; });
 
   // Box fills
-  for (let r=0;r<n;r++) for (let c=0;c<n;c++) {
+  for (let r=0; r<n; r++) for (let c=0; c<n; c++) {
     const p = ownerMap[`${r},${c}`];
     if (!p) continue;
-    const fill   = p===1?'rgba(255,77,77,.13)':'rgba(77,159,255,.13)';
-    const stroke = p===1?'rgba(255,77,77,.4)':'rgba(77,159,255,.4)';
-    const tc     = p===1?'#ff4d4d':'#4d9fff';
-    const init   = (p===1?(gs.name1||'A')[0]:(gs.name2||'B')[0]).toUpperCase();
-    svg.appendChild(mkEl('rect',{x:PAD+c*CELL+4,y:PAD+r*CELL+4,width:CELL-8,height:CELL-8,rx:4,fill,stroke,'stroke-width':1}));
-    const t = mkEl('text',{x:PAD+c*CELL+CELL/2,y:PAD+r*CELL+CELL/2+7,
-      'text-anchor':'middle','font-family':'Unbounded,sans-serif',
-      'font-size':16,'font-weight':900,fill:tc,opacity:.7});
+    const fill   = p===1 ? 'rgba(255,77,77,.13)' : 'rgba(77,159,255,.13)';
+    const stroke = p===1 ? 'rgba(255,77,77,.38)' : 'rgba(77,159,255,.38)';
+    const tc     = p===1 ? '#ff4d4d' : '#4d9fff';
+    const init   = (p===1 ? (gs.name1||'A') : (gs.name2||'B'))[0].toUpperCase();
+    svg.appendChild(mkEl('rect',{x:PAD+c*CELL+4, y:PAD+r*CELL+4, width:CELL-8, height:CELL-8, rx:5, fill, stroke, 'stroke-width':1}));
+    const t = mkEl('text',{x:PAD+c*CELL+CELL/2, y:PAD+r*CELL+CELL/2+8,
+      'text-anchor':'middle','font-family':'Unbounded,sans-serif','font-size':17,'font-weight':900, fill:tc, opacity:.65});
     t.textContent = init;
     svg.appendChild(t);
   }
 
-  // Lines
-  for (let r=0;r<=n;r++) for (let c=0;c<n;c++) {
-    const k=`H,${r},${c}`;
-    const isDrw=drawn.has(k);
-    const isHov=hovered&&hovered.dir==='H'&&hovered.row===r&&hovered.col===c;
-    const stroke = isDrw?lineColor('H',r,c):isHov?(gs.current===1?'#ff4d4d':'#4d9fff'):'#252525';
-    const sw = isDrw?5:isHov?4:2;
-    const op = isDrw?1:isHov?0.8:1;
-    svg.appendChild(mkEl('line',{x1:PAD+c*CELL,y1:PAD+r*CELL,x2:PAD+(c+1)*CELL,y2:PAD+r*CELL,
-      stroke,'stroke-width':sw,'stroke-linecap':'round',opacity:op}));
+  // Horizontal lines
+  for (let r=0; r<=n; r++) for (let c=0; c<n; c++) {
+    const k     = `H,${r},${c}`;
+    const isDrw = drawn.has(k);
+    const isHov = hovered && hovered.dir==='H' && hovered.row===r && hovered.col===c;
+    const isLAI = isLastAI('H', r, c);
+    let stroke, sw, op;
+    if (isDrw) {
+      stroke = isLAI ? '#a855f7' : lineColor('H',r,c);
+      sw = isLAI ? 6 : 5;
+      op = 1;
+    } else if (isHov && isHumanNow()) {
+      stroke = gs.current===1 ? '#ff4d4d' : '#4d9fff';
+      sw = 4; op = 0.7;
+    } else {
+      stroke = '#252525'; sw = 2; op = 1;
+    }
+    svg.appendChild(mkEl('line',{x1:PAD+c*CELL, y1:PAD+r*CELL, x2:PAD+(c+1)*CELL, y2:PAD+r*CELL,
+      stroke, 'stroke-width':sw, 'stroke-linecap':'round', opacity:op}));
+    // AI glow
+    if (isLAI) {
+      svg.appendChild(mkEl('line',{x1:PAD+c*CELL, y1:PAD+r*CELL, x2:PAD+(c+1)*CELL, y2:PAD+r*CELL,
+        stroke:'#a855f7','stroke-width':12,'stroke-linecap':'round',opacity:.12}));
+    }
   }
-  for (let r=0;r<n;r++) for (let c=0;c<=n;c++) {
-    const k=`V,${r},${c}`;
-    const isDrw=drawn.has(k);
-    const isHov=hovered&&hovered.dir==='V'&&hovered.row===r&&hovered.col===c;
-    const stroke = isDrw?lineColor('V',r,c):isHov?(gs.current===1?'#ff4d4d':'#4d9fff'):'#252525';
-    const sw = isDrw?5:isHov?4:2;
-    const op = isDrw?1:isHov?0.8:1;
-    svg.appendChild(mkEl('line',{x1:PAD+c*CELL,y1:PAD+r*CELL,x2:PAD+c*CELL,y2:PAD+(r+1)*CELL,
-      stroke,'stroke-width':sw,'stroke-linecap':'round',opacity:op}));
+
+  // Vertical lines
+  for (let r=0; r<n; r++) for (let c=0; c<=n; c++) {
+    const k     = `V,${r},${c}`;
+    const isDrw = drawn.has(k);
+    const isHov = hovered && hovered.dir==='V' && hovered.row===r && hovered.col===c;
+    const isLAI = isLastAI('V', r, c);
+    let stroke, sw, op;
+    if (isDrw) {
+      stroke = isLAI ? '#a855f7' : lineColor('V',r,c);
+      sw = isLAI ? 6 : 5;
+      op = 1;
+    } else if (isHov && isHumanNow()) {
+      stroke = gs.current===1 ? '#ff4d4d' : '#4d9fff';
+      sw = 4; op = 0.7;
+    } else {
+      stroke = '#252525'; sw = 2; op = 1;
+    }
+    svg.appendChild(mkEl('line',{x1:PAD+c*CELL, y1:PAD+r*CELL, x2:PAD+c*CELL, y2:PAD+(r+1)*CELL,
+      stroke, 'stroke-width':sw, 'stroke-linecap':'round', opacity:op}));
+    if (isLAI) {
+      svg.appendChild(mkEl('line',{x1:PAD+c*CELL, y1:PAD+r*CELL, x2:PAD+c*CELL, y2:PAD+(r+1)*CELL,
+        stroke:'#a855f7','stroke-width':12,'stroke-linecap':'round',opacity:.12}));
+    }
   }
 
   // Dots
-  for (let r=0;r<=n;r++) for (let c=0;c<=n;c++) {
-    svg.appendChild(mkEl('circle',{cx:PAD+c*CELL,cy:PAD+r*CELL,r:DOT_R,fill:'#555'}));
+  for (let r=0; r<=n; r++) for (let c=0; c<=n; c++) {
+    svg.appendChild(mkEl('circle',{cx:PAD+c*CELL, cy:PAD+r*CELL, r:DOT_R, fill:'#505050'}));
   }
 }
 
-// ── SINGLE GLOBAL MOUSE HANDLER (set once, never duplicated) ──
+// ============================================================
+// MOUSE HANDLERS
+// ============================================================
 function getNearestLine(mx, my) {
   if (!gs || gs.over) return null;
-  const n = gs.size;
+  const n     = gs.size;
   const drawn = new Set((gs.lines||[]).map(l=>`${l.dir},${l.row},${l.col}`));
   let best=18, bDir=null, bR=-1, bC=-1;
-  for (let r=0;r<=n;r++) for (let c=0;c<n;c++) {
+  for (let r=0; r<=n; r++) for (let c=0; c<n; c++) {
     if (drawn.has(`H,${r},${c}`)) continue;
     const lx1=PAD+c*CELL+4, lx2=PAD+(c+1)*CELL-4, ly=PAD+r*CELL;
     if (mx<lx1||mx>lx2) continue;
     const d=Math.abs(my-ly);
     if (d<best){best=d;bDir='H';bR=r;bC=c;}
   }
-  for (let r=0;r<n;r++) for (let c=0;c<=n;c++) {
+  for (let r=0; r<n; r++) for (let c=0; c<=n; c++) {
     if (drawn.has(`V,${r},${c}`)) continue;
     const lx=PAD+c*CELL, ly1=PAD+r*CELL+4, ly2=PAD+(r+1)*CELL-4;
     if (my<ly1||my>ly2) continue;
     const d=Math.abs(mx-lx);
     if (d<best){best=d;bDir='V';bR=r;bC=c;}
   }
-  return bDir ? {dir:bDir, row:bR, col:bC} : null;
+  return bDir ? {dir:bDir,row:bR,col:bC} : null;
 }
 
 function getSvgCoords(e) {
   const svg = document.getElementById('board-svg');
-  const bb = svg.getBoundingClientRect();
-  return { mx: e.clientX-bb.left, my: e.clientY-bb.top };
+  const bb  = svg.getBoundingClientRect();
+  return {mx: e.clientX-bb.left, my: e.clientY-bb.top};
 }
-
 function isOverSvg(e) {
   const svg = document.getElementById('board-svg');
-  const bb = svg.getBoundingClientRect();
-  return e.clientX>=bb.left && e.clientX<=bb.right &&
-         e.clientY>=bb.top  && e.clientY<=bb.bottom;
+  const bb  = svg.getBoundingClientRect();
+  return e.clientX>=bb.left && e.clientX<=bb.right && e.clientY>=bb.top && e.clientY<=bb.bottom;
 }
 
-// Attach once to document
-document.addEventListener('mousemove', function(e) {
-  if (!gs || !isOverSvg(e)) {
-    if (hovered) { hovered=null; renderBoard(); }
-    return;
-  }
+document.addEventListener('mousemove', e => {
+  if (!gs || !isOverSvg(e)) { if (hovered){hovered=null;renderBoard();} return; }
   const {mx,my} = getSvgCoords(e);
-  const hit = getNearestLine(mx, my);
+  const hit = getNearestLine(mx,my);
   const same = hit && hovered &&
     hit.dir===hovered.dir && hit.row===hovered.row && hit.col===hovered.col;
   if (!same) { hovered=hit; renderBoard(); }
 });
 
-document.addEventListener('click', function(e) {
+document.addEventListener('click', e => {
   if (!gs || !isOverSvg(e)) return;
+  if (!isHumanNow()) return;
   const {mx,my} = getSvgCoords(e);
-  const hit = getNearestLine(mx, my);
+  const hit = getNearestLine(mx,my);
   if (hit) sendMove(hit.dir, hit.row, hit.col);
 });
 
-// ── SCORES ──
+// ============================================================
+// SCORES
+// ============================================================
+function playerTypeLabel(mode, player) {
+  if (mode === 'human-human') return 'Людина';
+  if (mode === 'human-ai')    return player===1 ? 'Людина' : 'Комп';
+  if (mode === 'ai-human')    return player===1 ? 'Комп'  : 'Людина';
+  if (mode === 'ai-ai')       return 'Комп';
+  return 'Людина';
+}
+
 function renderScores() {
   if (!gs) return;
   document.getElementById('lbl-p1').textContent = gs.name1;
   document.getElementById('lbl-p2').textContent = gs.name2;
   document.getElementById('sc-p1').textContent  = gs.score1;
   document.getElementById('sc-p2').textContent  = gs.score2;
-  document.getElementById('card-p1').className = 'player-card'+(gs.current===1&&!gs.over?' active-p1':'');
-  document.getElementById('card-p2').className = 'player-card'+(gs.current===2&&!gs.over?' active-p2':'');
+  document.getElementById('card-p1').className  = 'player-card' + (gs.current===1&&!gs.over?' active-p1':'');
+  document.getElementById('card-p2').className  = 'player-card' + (gs.current===2&&!gs.over?' active-p2':'');
+
+  const t1 = document.getElementById('type-p1');
+  const t2 = document.getElementById('type-p2');
+  t1.textContent = playerTypeLabel(gs.mode, 1);
+  t2.textContent = playerTypeLabel(gs.mode, 2);
+  t1.className = 'player-type' + (playerTypeLabel(gs.mode,1).includes('Комп') ? ' comp-tag' : '');
+  t2.className = 'player-type' + (playerTypeLabel(gs.mode,2).includes('Комп') ? ' comp-tag' : '');
+
   const tl = document.getElementById('turn');
-  if (gs.over) { tl.textContent = gs.winner; }
+  if (gs.over) { tl.textContent = gs.winner || ''; }
   else {
-    const who=gs.current===1?gs.name1:gs.name2;
-    const col=gs.current===1?'var(--p1)':'var(--p2)';
-    tl.innerHTML=`хід: <span style="color:${col};font-weight:700">${who}</span>`;
+    const who = gs.current===1 ? gs.name1 : gs.name2;
+    const col = gs.current===1 ? 'var(--p1)' : 'var(--p2)';
+    const isAI = !isHumanNow();
+    tl.innerHTML = `хід: <span style="color:${col};font-weight:700">${who}</span>` +
+      (isAI ? ' <span style="color:var(--ai);font-size:.58rem">[Комп]</span>' : '');
   }
 }
 
-// ── LOG ──
+// ============================================================
+// LOG
+// ============================================================
 function renderLog() {
   const el = document.getElementById('log-list');
   if (!moveLog.length) {
-    el.innerHTML='<div class="log-item" style="opacity:.3;font-size:.68rem">— поки нічого —</div>';
+    el.innerHTML = '<div class="log-item" style="opacity:.3;font-size:.63rem">— поки нічого —</div>';
     return;
   }
-  el.innerHTML = [...moveLog].reverse().map(e=>`
+  el.innerHTML = [...moveLog].reverse().map(e => `
     <div class="log-item p${e.p}">
       <span class="log-n">#${e.n}</span>
       <span class="log-move">${e.text}</span>
-      ${e.cap>0?`<span class="log-cap">+${e.cap}</span>`:''}
+      ${e.cap>0 ? `<span class="log-cap">+${e.cap}</span>` : ''}
+      ${e.isAI  ? `<span class="log-comp-tag">AI</span>` : ''}
     </div>`).join('');
 }
 
-// ── INFO ──
-function renderInfo() {
-  if (!gs) return;
-  document.getElementById('info-be').textContent = backend==='haskell'?'Haskell':'SWI-Prolog';
-  document.getElementById('info-move').textContent = `#${gs.moveCount}`;
-  document.getElementById('info-size').textContent = `${gs.size} × ${gs.size}`;
+// ============================================================
+// INFO
+// ============================================================
+function modeLabel(m) {
+  const map = {
+    'human-human': 'Людина–Людина',
+    'human-ai':    ' Людина vs Комп',
+    'ai-human':    'Комп vs Людина Людина',
+    'ai-ai':       'Комп vs Комп'
+  };
+  return map[m] || m;
 }
 
-// ── STATUS ──
+function renderInfo() {
+  if (!gs) return;
+  document.getElementById('info-be').textContent   = backend==='haskell' ? 'Haskell' : 'SWI-Prolog';
+  document.getElementById('info-mode').textContent = modeLabel(gs.mode);
+  document.getElementById('info-diff').textContent = gs.difficulty || '—';
+  document.getElementById('info-depth').textContent = gs.depth ? gs.depth+' напів-ходів' : '—';
+  document.getElementById('info-move').textContent  = `#${gs.moveCount}`;
+  document.getElementById('info-size').textContent  = `${gs.size} × ${gs.size}`;
+}
+
+// ============================================================
+// AI UI HELPERS
+// ============================================================
+function showAIThinking(v) {
+  document.getElementById('ai-thinking').className = 'ai-thinking' + (v?' visible':'');
+}
+function showAILastMove(la) {
+  const badge = document.getElementById('ai-move-badge');
+  badge.classList.add('visible');
+  document.getElementById('ai-move-text').textContent =
+    `${la.dir==='H'?'→':'↓'} (${la.row}, ${la.col})`;
+}
+function hideAILastMove() {
+  document.getElementById('ai-move-badge').classList.remove('visible');
+}
+
+// ============================================================
+// STATUS
+// ============================================================
 function setStatus(s) {
-  document.getElementById('sdot').className='status-dot '+s;
-  document.getElementById('stxt').textContent=s==='online'?'онлайн':s==='offline'?'офлайн':'…';
+  document.getElementById('sdot').className = 'status-dot '+s;
+  document.getElementById('stxt').textContent = s==='online'?'онлайн':s==='offline'?'офлайн':'…';
 }
 async function checkStatus() {
   setStatus('checking');
-  try { await fetch(base()+'/state',{signal:AbortSignal.timeout(2500)}); setStatus('online'); }
-  catch(e) { setStatus('offline'); }
+  try {
+    await fetch(base()+'/state', {signal: AbortSignal.timeout(2500)});
+    setStatus('online');
+  } catch(e) { setStatus('offline'); }
 }
 
-function showErr(msg){const e=document.getElementById('err-box');e.textContent=msg;e.style.display='block';}
-function hideErr(){document.getElementById('err-box').style.display='none';}
+function showErr(msg) {
+  const e = document.getElementById('err-box');
+  e.textContent = msg; e.style.display = 'block';
+}
+function hideErr() { document.getElementById('err-box').style.display = 'none'; }
 
 checkStatus();
 </script>
